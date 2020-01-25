@@ -1,0 +1,29 @@
+{
+  "extends": ["tslint:latest", "tslint-react", "tslint-react-hooks"],
+  "rules": {
+    "object-literal-shorthand": [false],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "interface-name": false,
+    "indent": [true, "spaces"],
+    "quotemark": [true, "single", "jsx-double"],
+    "no-var-requires": false,
+    "ordered-imports": false,
+    "member-ordering": [false],
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-console": [false],
+    "no-consecutive-blank-lines": [false],
+    "no-string-literal": false,
+    "jsx-no-multiline-js": false,
+    "jsx-boolean-value": false,
+    "arrow-parens": [false],
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
+    "no-empty": false,
+    "jsx-alignment": false,
+    "no-empty-interface": false
+  },
+  "linterOptions": {
+    "exclude": ["**/*.js"]
+  }
+}
