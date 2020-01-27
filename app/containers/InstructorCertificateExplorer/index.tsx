@@ -10,10 +10,6 @@ import {
   getCountries,
   queryInstructorsByCountry,
 } from './spreadsheet';
-import { RouteComponentProps } from 'react-router';
-import { Utils } from 'utils/index';
-import { useDispatch } from 'react-redux';
-import { replace } from 'connected-react-router';
 import { ToggleSwitch } from 'components/ToggleSwitch';
 import { CountryTable } from './CountryTable';
 
@@ -39,7 +35,6 @@ export default function CertificateExplorer() {
     if (evt !== undefined && evt.preventDefault) {
       evt.preventDefault();
     }
-    console.log(selectedCountry);
     if (inputValue && selectedSwitch === 'id') {
       setIsLoading(true);
       const instructor = await queryInstructor(inputValue);
@@ -49,7 +44,6 @@ export default function CertificateExplorer() {
       setIsLoading(true);
       const instructors = await queryInstructorsByCountry(selectedCountry);
       setIsLoading(false);
-      console.log(instructors);
       setCountryInstructors(instructors);
     }
   }
