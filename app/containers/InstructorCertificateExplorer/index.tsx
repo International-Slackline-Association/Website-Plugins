@@ -109,14 +109,7 @@ export default function CertificateExplorer() {
             <ValidText>
               <b>{`${instructor.firstname} ${instructor.name}`}</b>
               <span>&nbsp;has a&nbsp;</span>
-              {instructor.rigger ? (
-                <b>
-                  {instructor.level && `${instructor.level} / `} Rigger
-                  Certificate
-                </b>
-              ) : (
-                <b>{instructor.level} Certificate</b>
-              )}
+              <b>{instructor.level} Certificate</b>
               <span>&nbsp;valid until&nbsp;</span>
               <b>{instructor.valid}</b>
             </ValidText>

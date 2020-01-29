@@ -15,10 +15,13 @@ const GearCertificateExplorer = lazy(() =>
   import('../GearCertificateExplorer'),
 );
 
+const CertificatesHomepage = lazy(() => import('../CertificatesHomepage'));
+
 const App: React.FC = () => {
   return (
     <Suspense fallback={null}>
       <Switch>
+        <Route path={'/certificates'} component={CertificatesHomepage} />
         <Route
           path={'/instructor-certificate-explorer'}
           component={InstructorCertificateExplorer}

@@ -13,6 +13,7 @@ interface IThemeInterface {
   textInvertedSecondary: string;
 
   background: string;
+  backgroundOverlay: string;
   backgroundSecondary: string;
 
   primary: string;

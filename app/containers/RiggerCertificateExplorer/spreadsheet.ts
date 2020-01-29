@@ -9,66 +9,65 @@ interface SheetResponse {
 
 type SheetItem = string[];
 
-export interface InstructorItem {
+export interface RiggerItem {
   id: string;
   name: string;
   firstname: string;
   country: string;
-  level: string;
   rigger: string;
   valid: string;
   riggerDate: string;
 }
 
-let instructors: InstructorItem[];
+let riggers: RiggerItem[];
 
 export async function preLoadData() {
-  if (!instructors) {
-    await loadInstructors();
+  if (!riggers) {
+    await loadRiggers();
   }
 }
 
 export async function getCountries() {
-  if (!instructors) {
-    await loadInstructors();
+  if (!riggers) {
+    await loadRiggers();
   }
-  const countries = instructors
+  const countries = riggers
     .map(i => i.country)
     .sort((a, b) => (a < b ? -1 : 1));
   const distinctCountries = Array.from(new Set(countries));
   return distinctCountries;
 }
 
-export async function queryInstructorsByCountry(country: string) {
-  if (!instructors) {
-    await loadInstructors();
+export async function queryRiggersByCountry(country: string) {
+  if (!riggers) {
+    await loadRiggers();
   }
-  const foundInstructors = instructors.filter(
+  const found = riggers.filter(
     i => i.country.toLowerCase().trim() === country.toLowerCase().trim(),
   );
-  return !foundInstructors ? null : foundInstructors;
+  return !found ? null : found;
 }
 
-export async function queryInstructor(query: string) {
-  if (!instructors) {
-    await loadInstructors();
+export async function queryRigger(query: string) {
+  if (!riggers) {
+    await loadRiggers();
   }
-  let foundInstructor = queryInstructorById(query);
-  if (!foundInstructor) {
-    foundInstructor = queryInstructorByName(query);
+  let found = queryRiggerById(query);
+  if (!found) {
+    found = queryRiggerByName(query);
   }
-  return !foundInstructor ? null : foundInstructor;
+  return !found ? null : found;
 }
 
-function queryInstructorById(id: string) {
-  const found = instructors.find(
+function queryRiggerById(id: string) {
+  const found = riggers.find(
     i => i.id.toLowerCase().trim() === id.toLowerCase().trim(),
   );
   return found;
 }
 
-function queryInstructorByName(name: string) {
-  const found = instructors.find(
+function queryRiggerByName(name: string) {
+  const found = riggers.find(
     i =>
       `${i.firstname.toLowerCase()} ${i.name.toLowerCase()}` ===
       name.toLowerCase().trim(),
@@ -76,22 +75,21 @@ function queryInstructorByName(name: string) {
   return found;
 }
 
-async function loadInstructors() {
+async function loadRiggers() {
   const resp = await getSpreadsheetData();
-  const items = parseSheetResponse(resp);
-  instructors = items;
+  const items = parseSheetResponse(resp).filter(i => i.rigger.length > 0);
+  riggers = items;
 }
 
-function parseSheetResponse(resp: SheetResponse): InstructorItem[] {
+function parseSheetResponse(resp: SheetResponse): RiggerItem[] {
   const values = resp.values.slice(1); // skip columns
-  const items: InstructorItem[] = [];
+  const items: RiggerItem[] = [];
   for (const value of values) {
     items.push({
       id: value[0],
       name: value[1].trim(),
       firstname: value[2].trim(),
       country: value[5].trim(),
-      level: value[6].trim(),
       rigger: value[7]?.trim(),
       valid: value[10]?.trim(),
       riggerDate: value[12]?.trim(),

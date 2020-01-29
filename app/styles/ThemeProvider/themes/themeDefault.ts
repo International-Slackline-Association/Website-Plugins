@@ -21,7 +21,9 @@ export const theme: IThemeInterface = {
   textAccent: rgba(colors.red, 1),
 
   background: rgba(colors.white, 1),
-  backgroundSecondary: rgba(colors.darkWhite, 1),
+  backgroundOverlay: rgba(colors.dark, 0.3),
+
+  backgroundSecondary: rgba(colors.grey, 1),
 
   primary: rgba(colors.blue, 1),
 };
