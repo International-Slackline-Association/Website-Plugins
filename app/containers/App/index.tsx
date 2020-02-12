@@ -1,6 +1,5 @@
 import React, { Suspense, lazy, memo } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 
 import GlobalStyles from '../../styles/global-styles';
 

@@ -12,6 +12,8 @@ import {
 } from './spreadsheet';
 import { ToggleSwitch } from 'components/ToggleSwitch';
 import { CountryTable } from './CountryTable';
+import { PDFDownloadLink } from './PdfLink';
+import { generateCertificate } from './pdfGenerator/certificateGenerator';
 
 type SwitchType = 'id' | 'country';
 
@@ -66,6 +68,12 @@ export default function CertificateExplorer() {
   function countryChanged(evt: any) {
     setSelectedCountry(evt.target.value);
   }
+
+  function downloadCertificate(id: string) {
+    return async evt => {
+      await generateCertificate({ id: id });
+    };
+  }
   return (
     <Wrapper>
       <Header>Instructor Certificate Explorer</Header>
@@ -106,13 +114,18 @@ export default function CertificateExplorer() {
               <b>{inputValue}</b>
             </InvalidText>
           ) : (
-            <ValidText>
-              <b>{`${instructor.firstname} ${instructor.name}`}</b>
-              <span>&nbsp;has a&nbsp;</span>
-              <b>{instructor.level} Certificate</b>
-              <span>&nbsp;valid until&nbsp;</span>
-              <b>{instructor.valid}</b>
-            </ValidText>
+            <React.Fragment>
+              <ValidText>
+                <b>{`${instructor.firstname} ${instructor.name}`}</b>
+                <span>&nbsp;has a&nbsp;</span>
+                <b>{instructor.level} Certificate</b>
+                <span>&nbsp;valid until&nbsp;</span>
+                <b>{instructor.valid}</b>
+              </ValidText>
+              <PDFDownloadLink onClick={downloadCertificate(instructor.id)}>
+                Download Certificate
+              </PDFDownloadLink>
+            </React.Fragment>
           ))
         : countryInstructors && (
             <CountryTable>
@@ -124,6 +137,7 @@ export default function CertificateExplorer() {
                     <td>Lastname</td>
                     <td>Certificate</td>
                     <td>Expiration Date</td>
+                    <td />
                   </tr>
                 </thead>
                 <tbody>
@@ -134,6 +148,14 @@ export default function CertificateExplorer() {
                       <td>{instructor.name}</td>
                       <td>{instructor.level}</td>
                       <td>{instructor.valid}</td>
+                      <td>
+                        <PDFDownloadLink
+                          small
+                          onClick={downloadCertificate(instructor.id)}
+                        >
+                          Download Certificate
+                        </PDFDownloadLink>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -166,6 +188,7 @@ const ValidText = styled.span`
   white-space: nowrap;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 1rem;
 `;
 
 const InvalidText = styled.span`
