@@ -13,7 +13,10 @@ import {
 import { ToggleSwitch } from 'components/ToggleSwitch';
 import { CountryTable } from './CountryTable';
 import { PDFDownloadLink } from './PdfLink';
-import { generateCertificate } from './pdfGenerator/certificateGenerator';
+import {
+  generateInstructorCertificate,
+  canGenerateCertificate,
+} from './pdfGenerator/certificateGenerator';
 
 type SwitchType = 'id' | 'country';
 
@@ -69,9 +72,9 @@ export default function CertificateExplorer() {
     setSelectedCountry(evt.target.value);
   }
 
-  function downloadCertificate(id: string) {
+  function downloadCertificate(instructor: InstructorItem) {
     return async evt => {
-      await generateCertificate({ id: id });
+      await generateInstructorCertificate({ instructor: instructor });
     };
   }
   return (
@@ -122,9 +125,11 @@ export default function CertificateExplorer() {
                 <span>&nbsp;valid until&nbsp;</span>
                 <b>{instructor.valid}</b>
               </ValidText>
-              <PDFDownloadLink onClick={downloadCertificate(instructor.id)}>
-                Download Certificate
-              </PDFDownloadLink>
+              {canGenerateCertificate(instructor) && (
+                <PDFDownloadLink onClick={downloadCertificate(instructor)}>
+                  Download Certificate
+                </PDFDownloadLink>
+              )}
             </React.Fragment>
           ))
         : countryInstructors && (
@@ -149,12 +154,14 @@ export default function CertificateExplorer() {
                       <td>{instructor.level}</td>
                       <td>{instructor.valid}</td>
                       <td>
-                        <PDFDownloadLink
-                          small
-                          onClick={downloadCertificate(instructor.id)}
-                        >
-                          Download Certificate
-                        </PDFDownloadLink>
+                        {canGenerateCertificate(instructor) && (
+                          <PDFDownloadLink
+                            small
+                            onClick={downloadCertificate(instructor)}
+                          >
+                            Download Certificate
+                          </PDFDownloadLink>
+                        )}
                       </td>
                     </tr>
                   ))}

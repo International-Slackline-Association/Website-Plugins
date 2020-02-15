@@ -5,7 +5,14 @@ import { TextInput } from 'components/TextInput';
 import { LoadableButton } from 'components/LoadableButton';
 import { ToggleSwitch } from 'components/ToggleSwitch';
 import { CountryTable } from './CountryTable';
-import { RiggerItem, queryRigger, queryRiggersByCountry, getCountries } from './spreadsheet';
+import {
+  RiggerItem,
+  queryRigger,
+  queryRiggersByCountry,
+  getCountries,
+} from './spreadsheet';
+import { generateRiggerCertificate } from './pdfGenerator/certificateGenerator';
+import { PDFDownloadLink } from 'containers/InstructorCertificateExplorer/PdfLink';
 
 type SwitchType = 'id' | 'country';
 
@@ -16,9 +23,7 @@ export default function CertificateExplorer() {
   const [selectedSwitch, setSelectedSwitch] = useState<SwitchType>('id');
   const [countryList, setCountryList] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [countryRiggers, setCountryRiggers] = useState<
-  RiggerItem[] | null
-  >();
+  const [countryRiggers, setCountryRiggers] = useState<RiggerItem[] | null>();
 
   function updateValue(value: string) {
     setInputValue(value);
@@ -60,6 +65,12 @@ export default function CertificateExplorer() {
   function countryChanged(evt: any) {
     setSelectedCountry(evt.target.value);
   }
+
+  function downloadCertificate(rigger: RiggerItem) {
+    return async evt => {
+      await generateRiggerCertificate({ rigger: rigger });
+    };
+  }
   return (
     <Wrapper>
       <Header>Rigger Certificate Explorer</Header>
@@ -100,13 +111,18 @@ export default function CertificateExplorer() {
               <b>{inputValue}</b>
             </InvalidText>
           ) : (
-            <ValidText>
-              <b>{`${rigger.firstname} ${rigger.name}`}</b>
-              <span>&nbsp;has a&nbsp;</span>
-              <b>{rigger.rigger} Certificate</b>
-              <span>&nbsp;valid until&nbsp;</span>
-              <b>{rigger.valid}</b>
-            </ValidText>
+            <React.Fragment>
+              <ValidText>
+                <b>{`${rigger.firstname} ${rigger.name}`}</b>
+                <span>&nbsp;has a&nbsp;</span>
+                <b>{rigger.rigger} Certificate</b>
+                <span>&nbsp;valid until&nbsp;</span>
+                <b>{rigger.valid}</b>
+              </ValidText>
+              <PDFDownloadLink onClick={downloadCertificate(rigger)}>
+                Download Certificate
+              </PDFDownloadLink>
+            </React.Fragment>
           ))
         : countryRiggers && (
             <CountryTable>
