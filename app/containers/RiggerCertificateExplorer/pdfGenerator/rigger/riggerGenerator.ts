@@ -18,11 +18,11 @@ interface Props {
   language?: string;
 }
 
-const PDFs = { en: PDF_EN };
+export const RiggerPDFs = { en: PDF_EN };
 
 export async function generateRigger(props: Props): Promise<PDFDocument> {
   const language = props.language || 'en';
-  const blankPDF = PDFs[language] || PDFs.en;
+  const blankPDF = RiggerPDFs[language] || RiggerPDFs.en;
 
   const res = await fetch(blankPDF);
   const existingPdfBytes = await res.arrayBuffer();
@@ -88,7 +88,7 @@ function modificationPositions(
     date: { x: 397, y: pageSize.height - 390 - font.heightAtSize(fontSize) },
     qrCode: {
       x: 750 - qrImage.width / 2,
-      y: pageSize.height / 2 - qrImage.height,
+      y: pageSize.height - 100 - qrImage.height,
     },
   };
   return allLanguages;

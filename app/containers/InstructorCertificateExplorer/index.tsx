@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import styled from 'styles/styled-components';
 import media from 'styles/media';
 import { TextInput } from 'components/TextInput';
@@ -12,10 +13,11 @@ import {
 } from './spreadsheet';
 import { ToggleSwitch } from 'components/ToggleSwitch';
 import { CountryTable } from './CountryTable';
-import { PDFDownloadLink } from './PdfLink';
+import { CertificateDownloadButton } from './PDFDownload';
 import {
   generateInstructorCertificate,
   canGenerateCertificate,
+  availableLanguages,
 } from './pdfGenerator/certificateGenerator';
 
 type SwitchType = 'id' | 'country';
@@ -73,8 +75,11 @@ export default function CertificateExplorer() {
   }
 
   function downloadCertificate(instructor: InstructorItem) {
-    return async evt => {
-      await generateInstructorCertificate({ instructor: instructor });
+    return async (language: string) => {
+      await generateInstructorCertificate({
+        instructor: instructor,
+        language: language,
+      });
     };
   }
   return (
@@ -123,12 +128,19 @@ export default function CertificateExplorer() {
                 <span>&nbsp;has a&nbsp;</span>
                 <b>{instructor.level} Certificate</b>
                 <span>&nbsp;valid until&nbsp;</span>
-                <b>{instructor.valid}</b>
+                <b>{instructor.expiresAt}</b>
               </ValidText>
               {canGenerateCertificate(instructor) && (
-                <PDFDownloadLink onClick={downloadCertificate(instructor)}>
-                  Download Certificate
-                </PDFDownloadLink>
+                <React.Fragment>
+                  <DownloadText>
+                    Download Certificate (Select Language)
+                  </DownloadText>
+
+                  <CertificateDownloadButton
+                    languages={availableLanguages(instructor)}
+                    onClick={downloadCertificate(instructor)}
+                  />
+                </React.Fragment>
               )}
             </React.Fragment>
           ))
@@ -142,7 +154,7 @@ export default function CertificateExplorer() {
                     <td>Lastname</td>
                     <td>Certificate</td>
                     <td>Expiration Date</td>
-                    <td />
+                    <td>Download Certificate</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -152,15 +164,13 @@ export default function CertificateExplorer() {
                       <td>{instructor.firstname}</td>
                       <td>{instructor.name}</td>
                       <td>{instructor.level}</td>
-                      <td>{instructor.valid}</td>
+                      <td>{instructor.expiresAt}</td>
                       <td>
                         {canGenerateCertificate(instructor) && (
-                          <PDFDownloadLink
-                            small
+                          <CertificateDownloadButton
+                            languages={availableLanguages(instructor)}
                             onClick={downloadCertificate(instructor)}
-                          >
-                            Download Certificate
-                          </PDFDownloadLink>
+                          />
                         )}
                       </td>
                     </tr>
@@ -175,6 +185,15 @@ export default function CertificateExplorer() {
 
 const Switch = styled(ToggleSwitch)`
   margin-bottom: 2rem;
+`;
+
+const DownloadText = styled.span`
+  font-size: 1rem;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: ${props => props.theme.primary};
 `;
 
 const SwitchLabel = styled.span`

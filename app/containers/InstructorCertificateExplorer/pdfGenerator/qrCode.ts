@@ -2,7 +2,7 @@ import QRCode from 'qrcode';
 import { PDFPage, PDFDocument, PDFFont, rgb } from 'pdf-lib';
 
 export async function createQRCode(url: string): Promise<ArrayBuffer> {
-  return QRCode.toDataURL(url, { width: 65, margin: 0, errorCorrectionLevel: 'H' })
+  return QRCode.toDataURL(url, { width: 50, margin: 0, errorCorrectionLevel: 'H' })
     .then(async dataUrl => {
       const res = await fetch(dataUrl);
       const bytes = await res.arrayBuffer();
@@ -37,7 +37,7 @@ export async function embedQRCodeToPDF(
       y: point.y - 10,
       maxWidth: qrImage.width,
       lineHeight: 5,
-      size: 5,
+      size: 4,
       font: font,
       color: rgb(0, 0, 0),
     },

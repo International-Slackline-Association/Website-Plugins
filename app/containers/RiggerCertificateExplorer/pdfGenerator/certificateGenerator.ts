@@ -4,17 +4,19 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { createQRCode } from 'containers/InstructorCertificateExplorer/pdfGenerator/qrCode';
 import { RiggerItem } from '../spreadsheet';
-import { generateRigger } from './rigger/riggerGenerator';
+import { generateRigger, RiggerPDFs } from './rigger/riggerGenerator';
 
 interface RiggerCertificateProps {
   rigger: RiggerItem;
   language?: string;
 }
 
+export function availableLanguages() {
+  return Object.keys(RiggerPDFs);
+}
+
 export async function generateRiggerCertificate(props: RiggerCertificateProps) {
-  const bytes = await createQRCode(
-    'data.slacklineinternational.org/education/certificates/',
-  );
+  const bytes = await createQRCode('tinyurl.com/toeucxy');
   const rigger = props.rigger;
 
   const pdf = await generateRigger({

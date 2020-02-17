@@ -11,8 +11,11 @@ import {
   queryRiggersByCountry,
   getCountries,
 } from './spreadsheet';
-import { generateRiggerCertificate } from './pdfGenerator/certificateGenerator';
-import { PDFDownloadLink } from 'containers/InstructorCertificateExplorer/PdfLink';
+import {
+  generateRiggerCertificate,
+  availableLanguages,
+} from './pdfGenerator/certificateGenerator';
+import { CertificateDownloadButton } from 'containers/InstructorCertificateExplorer/PDFDownload';
 
 type SwitchType = 'id' | 'country';
 
@@ -67,8 +70,11 @@ export default function CertificateExplorer() {
   }
 
   function downloadCertificate(rigger: RiggerItem) {
-    return async evt => {
-      await generateRiggerCertificate({ rigger: rigger });
+    return async (language: string) => {
+      await generateRiggerCertificate({
+        rigger: rigger,
+        language: language,
+      });
     };
   }
   return (
@@ -117,11 +123,17 @@ export default function CertificateExplorer() {
                 <span>&nbsp;has a&nbsp;</span>
                 <b>{rigger.rigger} Certificate</b>
                 <span>&nbsp;valid until&nbsp;</span>
-                <b>{rigger.valid}</b>
+                <b>{rigger.expiresAt}</b>
               </ValidText>
-              <PDFDownloadLink onClick={downloadCertificate(rigger)}>
-                Download Certificate
-              </PDFDownloadLink>
+              <React.Fragment>
+                <DownloadText>
+                  Download Certificate (Select Language)
+                </DownloadText>
+                <CertificateDownloadButton
+                  languages={availableLanguages()}
+                  onClick={downloadCertificate(rigger)}
+                />
+              </React.Fragment>
             </React.Fragment>
           ))
         : countryRiggers && (
@@ -133,6 +145,7 @@ export default function CertificateExplorer() {
                     <td>Firstname</td>
                     <td>Lastname</td>
                     <td>Expiration Date</td>
+                    <td>Download Certificate</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -141,7 +154,13 @@ export default function CertificateExplorer() {
                       <td>{rigger.id}</td>
                       <td>{rigger.firstname}</td>
                       <td>{rigger.name}</td>
-                      <td>{rigger.valid}</td>
+                      <td>{rigger.expiresAt}</td>
+                      <td>
+                        <CertificateDownloadButton
+                          languages={availableLanguages()}
+                          onClick={downloadCertificate(rigger)}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -154,6 +173,14 @@ export default function CertificateExplorer() {
 
 const Switch = styled(ToggleSwitch)`
   margin-bottom: 2rem;
+`;
+const DownloadText = styled.span`
+  font-size: 1rem;
+  /* font-weight: bold; */
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: ${props => props.theme.primary};
 `;
 
 const SwitchLabel = styled.span`
@@ -174,6 +201,8 @@ const ValidText = styled.span`
   white-space: nowrap;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 1rem;
+
 `;
 
 const InvalidText = styled.span`

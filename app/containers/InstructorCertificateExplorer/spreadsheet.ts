@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 // tslint:disable-next-line: max-line-length
 const k = 'AIzaSyD1d4S8fcj' + '_' + 'UEcRnxuQqpJypb9slGV9XNw'; // The key is limiting actions only to this spreadsheet. Don't bother using it
 // tslint:disable-next-line: max-line-length
@@ -15,9 +17,8 @@ export interface InstructorItem {
   firstname: string;
   country: string;
   level: string;
-  rigger: string;
-  valid: string;
-  riggerDate: string;
+  date: string;
+  expiresAt: string;
 }
 
 let instructors: InstructorItem[];
@@ -92,9 +93,10 @@ function parseSheetResponse(resp: SheetResponse): InstructorItem[] {
       firstname: value[2].trim(),
       country: value[5].trim(),
       level: value[6].trim(),
-      rigger: value[7]?.trim(),
-      valid: value[10]?.trim(),
-      riggerDate: value[12]?.trim(),
+      date: moment(value[11]?.trim(), 'DD.MM.YY').format('DD/MM/YYYY'),
+      expiresAt: moment(value[11]?.trim(), 'DD.MM.YY')
+        .add(3, 'years')
+        .format('DD/MM/YYYY'),
     });
   }
   return items;

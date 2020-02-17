@@ -4,8 +4,8 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { createQRCode } from './qrCode';
 import { InstructorItem } from '../spreadsheet';
-import { generateTrainerC } from './trainerC/trainerCGenerator';
-import { generateTrainerB } from './trainerB/trainerBGenerator';
+import { generateTrainerC, TrainerCPDFs } from './trainerC/trainerCGenerator';
+import { generateTrainerB, TrainerBPDFs } from './trainerB/trainerBGenerator';
 
 interface InstructorCertificateProps {
   instructor: InstructorItem;
@@ -20,24 +20,31 @@ export function canGenerateCertificate(instructor: InstructorItem) {
   }
   return false;
 }
+
+export function availableLanguages(instructor: InstructorItem) {
+  if (instructor.level.includes('Instructor C')) {
+    return Object.keys(TrainerCPDFs);
+  } else if (instructor.level.includes('Instructor B')) {
+    return Object.keys(TrainerBPDFs);
+  }
+  return [];
+}
 export async function generateInstructorCertificate(
   props: InstructorCertificateProps,
 ) {
-  const bytes = await createQRCode(
-    'data.slacklineinternational.org/education/certificates/',
-  );
+  const bytes = await createQRCode('tinyurl.com/toeucxy');
   const instructor = props.instructor;
   let pdf: PDFDocument | undefined;
   if (instructor.level.includes('Instructor C')) {
     pdf = await generateTrainerC({
-      date: instructor.valid,
+      date: instructor.date,
       fullname: `${instructor.firstname} ${instructor.name}`,
       qrCode: bytes,
       language: props.language,
     });
   } else if (instructor.level.includes('Instructor B')) {
     pdf = await generateTrainerB({
-      date: instructor.valid,
+      date: instructor.date,
       fullname: `${instructor.firstname} ${instructor.name}`,
       qrCode: bytes,
       language: props.language,
