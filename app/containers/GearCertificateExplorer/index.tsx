@@ -70,7 +70,7 @@ export default function CertificateExplorer() {
 
   return (
     <Wrapper>
-      <Header>Gear Certificate Explorer</Header>
+      <Header>ISA Safety Label Explorer</Header>
       <FilterArea>
         <span>Filter by</span>
         <DropdownMenuContainer>

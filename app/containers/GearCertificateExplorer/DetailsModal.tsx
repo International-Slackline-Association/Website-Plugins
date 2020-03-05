@@ -6,12 +6,10 @@ import { Variants, motion } from 'framer-motion';
 const variants: Variants = {
   initial: {
     y: 50,
-    scale: 1,
     opacity: 0.5,
   },
   enter: {
     y: 0,
-    scale: 1,
     opacity: 1,
     transition: {
       duration: 0.3,
@@ -28,8 +26,8 @@ function Component(props: Props) {
   return (
     <Wrapper variants={variants} initial="initial" animate="enter">
       <PictureContainer>
-        <img src={gear.picture1} />
-        <img src={gear.picture2} />
+        <div style={{ backgroundImage: `url(${gear.picture1})` }} />
+        <div style={{ backgroundImage: `url(${gear.picture2})` }} />
       </PictureContainer>
       <Field>
         <span id="key">Brand:&nbsp;</span>
@@ -100,9 +98,13 @@ const PictureContainer = styled.div`
   justify-content: space-between;
   margin-bottom: 1rem;
   width: 100%;
-  & img {
+  & div {
+    border: none;
     width: 45%;
-    height: 45%;
+    height: 25vh;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
   }
 `;
 

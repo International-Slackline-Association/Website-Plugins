@@ -102,13 +102,13 @@ export default function CertificateExplorer() {
           />
         </form>
       ) : (
-        <select onChange={countryChanged} value={selectedCountry}>
+        <Select onChange={countryChanged} value={selectedCountry}>
           {countryList.map(country => (
             <option key={country} value={country}>
               {country}
             </option>
           ))}
-        </select>
+        </Select>
       )}
       <CustomLoadableButton isLoading={isLoading} onClick={checkClicked}>
         CHECK
@@ -182,6 +182,10 @@ export default function CertificateExplorer() {
     </Wrapper>
   );
 }
+
+const Select = styled.select`
+  max-width: 50vw;
+`;
 
 const Switch = styled(ToggleSwitch)`
   margin-bottom: 2rem;
