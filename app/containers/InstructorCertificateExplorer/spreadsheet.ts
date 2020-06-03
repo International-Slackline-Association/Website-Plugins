@@ -79,7 +79,7 @@ function queryInstructorByName(name: string) {
 
 async function loadInstructors() {
   const resp = await getSpreadsheetData();
-  const items = parseSheetResponse(resp).filter(i => i.level.length > 0);
+  const items = parseSheetResponse(resp).filter(i => i.level?.length > 0);
   instructors = items;
 }
 

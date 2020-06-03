@@ -79,7 +79,7 @@ function queryRiggerByName(name: string) {
 
 async function loadRiggers() {
   const resp = await getSpreadsheetData();
-  const items = parseSheetResponse(resp).filter(i => i.rigger.length > 0);
+  const items = parseSheetResponse(resp).filter(i => i.rigger?.length > 0);
   riggers = items;
 }
 
