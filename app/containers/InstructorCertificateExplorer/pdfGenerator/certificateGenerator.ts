@@ -1,11 +1,9 @@
-import TempPDF from './temp.pdf';
-
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import QRCode from 'qrcode';
 import { createQRCode } from './qrCode';
 import { InstructorItem } from '../spreadsheet';
 import { generateTrainerC, TrainerCPDFs } from './trainerC/trainerCGenerator';
 import { generateTrainerB, TrainerBPDFs } from './trainerB/trainerBGenerator';
+const latinize = require('latinize');
 
 interface InstructorCertificateProps {
   instructor: InstructorItem;
@@ -34,24 +32,26 @@ export async function generateInstructorCertificate(
 ) {
   const bytes = await createQRCode('tinyurl.com/toeucxy');
   const instructor = props.instructor;
+  const fullName = latinize(`${instructor.firstname} ${instructor.name}`);
+
   let pdf: PDFDocument | undefined;
   if (instructor.level.includes('Instructor C')) {
     pdf = await generateTrainerC({
       date: instructor.date,
-      fullname: `${instructor.firstname} ${instructor.name}`,
+      fullname: fullName,
       qrCode: bytes,
       language: props.language,
     });
   } else if (instructor.level.includes('Instructor B')) {
     pdf = await generateTrainerB({
       date: instructor.date,
-      fullname: `${instructor.firstname} ${instructor.name}`,
+      fullname: fullName,
       qrCode: bytes,
       language: props.language,
     });
   }
   if (pdf) {
-    const fileName = `${instructor.firstname} ${instructor.name}_Certificate`;
+    const fileName = `${fullName}_Certificate`;
     await downloadPDF(pdf, fileName);
   }
 }
