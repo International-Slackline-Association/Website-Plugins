@@ -75,7 +75,7 @@ export async function queryData(status?: string, manufacturer?: string) {
 async function loadData() {
   const resp = await getSpreadsheetData();
   const items = parseSheetResponse(resp);
-  data = items.sort((a, b) => (a.date < b.date ? -1 : 1));
+  data = items.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 function parseSheetResponse(resp: SheetResponse): EquipmentWarningItem[] {

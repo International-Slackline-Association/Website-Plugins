@@ -96,6 +96,7 @@ const PictureContainer = styled.div`
     object-fit: contain;
     border: none;
     width: 90%;
+    height: 25vh;
   }
 `;
 
