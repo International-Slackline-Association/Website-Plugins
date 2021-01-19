@@ -83,7 +83,6 @@ const Field = styled.div`
   #value {
     text-align: left;
     word-break: keep-all;
-    /* white-space: nowrap; */
   }
 `;
 

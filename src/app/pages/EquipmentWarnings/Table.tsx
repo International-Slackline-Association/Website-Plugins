@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 
 export const Table = styled.div`
-  width: 80%;
+  width: 95%;
 
   & table {
     font-family: arial, sans-serif;
@@ -16,6 +16,15 @@ export const Table = styled.div`
     text-align: left;
     padding: 8px;
     white-space: nowrap;
+  }
+
+  td.Recall {
+    background-color: red;
+    color: white;
+  }
+  td.Warning {
+    background-color: yellow;
+    font-weight: bold;
   }
 
   tr:nth-child(even) {

@@ -3,9 +3,11 @@ import styled from 'styled-components/macro';
 import { media } from 'styles/media';
 import {
   EquipmentWarningItem,
-  queryData,
-  getStatuses,
-  getManufacturers,
+  FilterValues,
+  getFilterValues,
+  filterBy,
+  SelectedFilters,
+  FilterKeyType,
 } from './spreadsheet';
 import { Table } from './Table';
 import { touchableOpacity } from 'styles/mixins';
@@ -13,13 +15,16 @@ import { DetailsModal } from './DetailsModal';
 import Modal, { ModalTransition } from '@atlaskit/modal-dialog';
 import { LoadingIndicator } from 'app/components/LoadingIndicator/index';
 
+const defaultFilters: SelectedFilters = {
+  status: 'All Statuses',
+  manufacturer: 'All Manufacturer',
+  productType: 'All Product Types',
+};
 export const EquipmentWarnings = () => {
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>();
-  const [statusFilters, setStatusFilters] = useState<string[]>([]);
-  const [selectedManufacturerFilter, setSelectedManufacturerFilter] = useState<
-    string
-  >();
-  const [manufacturersFilters, setManufacturerFilters] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(
+    defaultFilters,
+  );
+  const [filterValues, setFilterValues] = useState<FilterValues>({});
   const [equipmentList, setEquipmentList] = useState<
     EquipmentWarningItem[] | undefined
   >();
@@ -29,63 +34,57 @@ export const EquipmentWarnings = () => {
   >();
 
   useEffect(() => {
-    const setFilters = async () => {
-      const statuses = await getStatuses();
-      setStatusFilters(statuses);
-      setSelectedStatusFilter(statuses[0]);
-      const types = await getManufacturers();
-      setManufacturerFilters(types);
-      setSelectedManufacturerFilter(types[0]);
+    const fillFilterValues = async () => {
+      const filterValues = {};
+      for (const key in defaultFilters) {
+        const filterKey = key as FilterKeyType;
+        const defaultValue = defaultFilters[filterKey]!;
+        const values = await getFilterValues(filterKey, defaultValue);
+        filterValues[filterKey] = values;
+      }
+      setFilterValues(filterValues);
     };
-    setFilters();
+    fillFilterValues();
   }, []);
 
   useEffect(() => {
-    const setGearlist = async () => {
-      const gearList = await queryData(
-        selectedStatusFilter,
-        selectedManufacturerFilter,
-      );
-      setEquipmentList(gearList);
+    const setList = async () => {
+      const list = await filterBy(selectedFilters);
+      setEquipmentList(list);
     };
-    setGearlist();
-  }, [selectedStatusFilter, selectedManufacturerFilter]);
+    setList();
+  }, [selectedFilters]);
 
-  function detailsClicked(eq: EquipmentWarningItem) {
+  const selectFilter = (key: string, value: string) => {
+    setSelectedFilters({ ...selectedFilters, [key]: value });
+  };
+
+  const detailsClicked = (eq: EquipmentWarningItem) => {
     return () => {
       setCurrentViewingEquipment(eq);
       setViewerIsOpen(true);
     };
-  }
+  };
 
   return (
     <Wrapper>
-      <Header>ISA Equipment Warnings and Recalls</Header>
+      <Header>ISA Gear Warnings and Manufacturer Recalls</Header>
       <FilterArea>
         <span>Filter by</span>
         <DropdownMenuContainer>
-          <DropdownMenu
-            onChange={(evt: any) => setSelectedStatusFilter(evt.target.value)}
-            value={selectedStatusFilter}
-          >
-            {statusFilters.map(s => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </DropdownMenu>
-          <DropdownMenu
-            onChange={(evt: any) =>
-              setSelectedManufacturerFilter(evt.target.value)
-            }
-            value={selectedManufacturerFilter}
-          >
-            {manufacturersFilters.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </DropdownMenu>
+          {Object.keys(selectedFilters).map(filterKey => (
+            <DropdownMenu
+              key={filterKey}
+              onChange={(evt: any) => selectFilter(filterKey, evt.target.value)}
+              value={selectedFilters[filterKey]}
+            >
+              {filterValues[filterKey]?.map(s => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </DropdownMenu>
+          ))}
         </DropdownMenuContainer>
       </FilterArea>
       {equipmentList ? (
@@ -93,10 +92,9 @@ export const EquipmentWarnings = () => {
           <table>
             <thead>
               <tr>
-                <td>Date</td>
                 <td>Status</td>
                 <td>Product Type</td>
-                <td>Name</td>
+                <td>Model</td>
                 <td>Manufacturer</td>
                 <td />
               </tr>
@@ -104,8 +102,7 @@ export const EquipmentWarnings = () => {
             <tbody>
               {equipmentList.map(eq => (
                 <tr key={eq._id}>
-                  <td>{eq.dateString}</td>
-                  <td>{eq.status}</td>
+                  <td className={eq.status}>{eq.status}</td>
                   <td>{eq.productType}</td>
                   <td>{eq.name}</td>
                   <td>{eq.manufacturer}</td>
@@ -143,7 +140,7 @@ const DetailsButton = styled.td`
 const FilterArea = styled.div`
   display: flex;
   flex-direction: column;
-  width: 80%;
+  width: 95%;
 
   & span {
     font-size: 0.8rem;

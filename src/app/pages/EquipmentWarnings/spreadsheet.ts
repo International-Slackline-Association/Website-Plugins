@@ -11,6 +11,13 @@ interface SheetResponse {
 
 type SheetItem = string[];
 
+type KeysOfType<T, TProp> = {
+  [P in keyof T]: T[P] extends TProp ? P : never;
+}[keyof T];
+
+export type FilterKeyType = KeysOfType<EquipmentWarningItem, string>;
+export type FilterValues = { [key in FilterKeyType]?: [string] };
+export type SelectedFilters = { [key in FilterKeyType]?: string };
 export interface EquipmentWarningItem {
   _id: string;
   status: string;
@@ -28,6 +35,35 @@ export interface EquipmentWarningItem {
 }
 
 let data: EquipmentWarningItem[];
+
+export async function filterBy(filters: SelectedFilters) {
+  if (!data) {
+    await loadData();
+  }
+  let list = data;
+
+  for (const key in filters) {
+    const value = filters[key];
+    if (value.includes('All')) {
+      continue;
+    }
+    list = list.filter(
+      i => i[key].toLowerCase().trim() === value.toLowerCase().trim(),
+    );
+  }
+  return list;
+}
+export async function getFilterValues(
+  key: FilterKeyType,
+  defaultValue: string,
+) {
+  if (!data) {
+    await loadData();
+  }
+  const values = data.map(i => i[key]).sort((a, b) => (a < b ? -1 : 1));
+  const distinct = [defaultValue].concat(Array.from(new Set(values)));
+  return distinct;
+}
 
 export async function getStatuses() {
   if (!data) {
